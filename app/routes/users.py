@@ -103,6 +103,9 @@ def get_users():
         users = cursor.fetchall() # returns empty list if nothing
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
     
     if not users:
         return [] # return empty list instead raising a 404

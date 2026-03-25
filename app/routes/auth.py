@@ -1,4 +1,5 @@
 # auth.py
+
 import os
 import requests
 from fastapi import APIRouter, HTTPException
@@ -11,6 +12,7 @@ from datetime import datetime, timedelta
 
 
 auth_router = APIRouter()
+
 
 @auth_router.post('/auth/login')
 def login(email: str, password: str):

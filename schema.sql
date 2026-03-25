@@ -1,5 +1,11 @@
 -- ====== SwitchPlay Database Schema ====== --
 
+-- Drop tables in reverse order (children before parents, because of foreign keys)
+DROP TABLE IF EXISTS transfer_items;
+DROP TABLE IF EXISTS transfer_requests;
+DROP TABLE IF EXISTS platform_auth;
+DROP TABLE IF EXISTS users;
+
 -- ====== users table ====== --
 CREATE TABLE IF NOT EXISTS users (
   id          UUID DEFAULT gen_random_uuid() PRIMARY KEY,

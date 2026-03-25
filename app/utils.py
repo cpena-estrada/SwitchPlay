@@ -36,7 +36,7 @@ def create_token(user_id: str):
 
 def get_current_user_from_token(token: str):
     """
-    
+    generate and return a JWT token for a user
     """
     SECRET_KEY = os.getenv('SECRET_KEY')
 
@@ -45,4 +45,3 @@ def get_current_user_from_token(token: str):
         return payload['user_id']
     except:
         raise HTTPException(status_code=401, detail='Invalid token')
-
