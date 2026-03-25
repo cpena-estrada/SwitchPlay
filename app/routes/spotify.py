@@ -144,7 +144,7 @@ def get_playlist_tracks(playlist_id: str, token: str):
     access_token = get_spotify_access_token(token)
 
     response = requests.get(
-        f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks",
+        f"https://api.spotify.com/v1/playlists/{playlist_id}/items",
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
@@ -154,7 +154,7 @@ def get_playlist_tracks(playlist_id: str, token: str):
     spotify_data = response.json()
     tracks = []
     for item in spotify_data['items']:
-        track = item['track']
+        track = item['item']
         artists = ', '.join([artist['name'] for artist in track['artists']])
         tracks.append({
             'name': track['name'],

@@ -119,6 +119,11 @@ def spotify_callback(code: str = None, error: str = None, state: str = None):
             """
             INSERT INTO platform_auth (user_id, platform, access_token, refresh_token, expires_at)
             VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (user_id, platform)
+            DO UPDATE SET
+                access_token = EXCLUDED.access_token,
+                refresh_token = EXCLUDED.refresh_token,
+                expires_at = EXCLUDED.expires_at
             """,
             (user_id, 'spotify', access_token, refresh_token, expires_at)
         )
