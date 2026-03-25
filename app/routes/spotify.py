@@ -109,7 +109,7 @@ def get_spotify_access_token(token: str):
 
 
 @spotify_router.get('/spotify/playlists')
-def get_playlist(token: str):
+def get_playlists(token: str):
     """
     Get a users access token and call spotify api to fetch all their playlists
     """
@@ -130,7 +130,7 @@ def get_playlist(token: str):
         playlists.append({
             'id': p['id'],
             'name': p['name'],
-            'total_tracks': p['tracks']['total']
+            'total_tracks': p.get('items', {}).get('total', 0)
         })
     
     return playlists

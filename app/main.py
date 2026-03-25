@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.routes.users import users_router
 from app.routes.auth import auth_router
 from app.routes.spotify import spotify_router
+from app.routes.transfer import transfer_router
 from app.database import get_connection
 
 app = FastAPI(
@@ -14,6 +15,7 @@ app = FastAPI(
 app.include_router(users_router)
 app.include_router(auth_router)
 app.include_router(spotify_router)
+app.include_router(transfer_router)
 
 
 @app.get("/")
@@ -28,6 +30,4 @@ starting it:
 python3 -m uvicorn app.main:app --reload
 
 http://127.0.0.1:8000/docs
-
-http://127.0.0.1:8000/auth/spotify?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMjZhYWI3ODktZWViMC00MDRlLWExODQtMjhlMGZlNDIwNGY2IiwiZXhwIjoxNzczMjcyODI2fQ.h3vmmHAVVVaEQZJSyhPLOD25TCfiausnnAD0uTvjR9A
 """
