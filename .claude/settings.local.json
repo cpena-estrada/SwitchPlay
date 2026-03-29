@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3 -c \":*)"
+      "Bash(python3 -c \":*)",
+      "mcp__f3e532c2-1e63-4b1c-9099-b47a69aa0b6e__notion-create-pages",
+      "mcp__f3e532c2-1e63-4b1c-9099-b47a69aa0b6e__notion-update-page"
     ]
   }
 }
