@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./SwitchPlay.css";
 import LoginPage from "./LoginPage";
 import SenderPage from "./SenderPage";
 import ReceiverPage from "./ReceiverPage";
@@ -13,11 +14,22 @@ function App() {
 
   if (page === 'choose') {
     return (
-      <div>
-        <h1>SwitchPlay</h1>
-        <p>What do you want to do?</p>
-        <button onClick={() => setPage('sender')}>Send a Playlist</button>
-        <button onClick={() => setPage('receiver')}>Receive a Playlist</button>
+      <div className="sp-bg">
+        <div className="sp-login-card">
+          <div className="sp-logo-block">
+            <span className="sp-logo-icon">⇄</span>
+            <h1 className="sp-wordmark">SwitchPlay</h1>
+            <p className="sp-tagline">What do you want to do?</p>
+          </div>
+          <div className="sp-form">
+            <button className="sp-btn sp-btn-primary" onClick={() => setPage('sender')}>
+              Send a Playlist
+            </button>
+            <button className="sp-btn sp-btn-secondary" onClick={() => setPage('receiver')}>
+              Receive a Playlist
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
