@@ -109,7 +109,7 @@ def get_spotify_access_token(token: str):
 
 
 @spotify_router.get('/spotify/playlists')
-def get_playlists(token: str):
+def get_spotify_playlists(token: str):
     """
     Get a users access token and call spotify api to fetch all their playlists
     """
@@ -135,8 +135,9 @@ def get_playlists(token: str):
     
     return playlists
 
+
 @spotify_router.get('/spotify/playlists/{playlist_id}')
-def get_playlist_tracks(playlist_id: str, token: str):
+def get_spotify_playlist_tracks(playlist_id: str, token: str):
     """
     Get all tracks from a specific Spotify playlist through its id
     """
@@ -163,3 +164,45 @@ def get_playlist_tracks(playlist_id: str, token: str):
         })
 
     return tracks
+
+
+def search_spotify(access_token: str, items: list):
+    """
+    Searches spotify music catalog to find spotify song ids of songs in trasnfer request
+
+    *Searches a list of songs*
+    """
+    matched_uris = []
+    matched_ids = []
+    not_found_ids = []
+
+    # search for each song on spotify
+    for item in items:
+        item_id = item[0]
+        song_name = item[1]
+        artist_name = item[2]
+
+        search_response = requests.get(
+            "https://api.spotify.com/v1/search",
+            headers={'Authorization': f'Bearer {access_token}'},
+            params={
+                'q': f'track:{song_name} artist:{artist_name}',
+                'type': 'track',
+                'limit': 1
+            }
+        )
+
+        if search_response.status_code != 200:
+            not_found_ids.append(item_id)
+            continue
+
+        search_data = search_response.json()
+        tracks = search_data.get('tracks', {}).get('items', [])
+
+        if len(tracks) > 0:
+            matched_uris.append(tracks[0]['uri'])
+            matched_ids.append(item_id)
+        else:
+            not_found_ids.append(item_id)
+
+    return matched_uris, matched_ids, not_found_ids
