@@ -6,6 +6,7 @@ import requests
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from .spotify import get_spotify_playlist_tracks, get_spotify_access_token, search_spotify
+from .apple import get_apple_music_playlist_tracks, get_apple_music_access_token, generate_apple_developer_token, search_apple_music
 from ..database import get_connection
 from ..utils import get_current_user_from_token
 
@@ -36,7 +37,7 @@ def make_transfer_request(transfer: TransferCreate, token: str):
     if source_platform == 'spotify':
         tracks = get_spotify_playlist_tracks(playlist_id, token)
     elif source_platform == 'apple_music':
-        raise HTTPException(status_code=400, detail="Apple Music not supported yet")
+        tracks = get_apple_music_playlist_tracks(token, playlist_id)
     else:
         raise HTTPException(status_code=400, detail="Invalid source platform")
 
@@ -219,7 +220,7 @@ def transfer_to_spotify(access_token: str, title: str, items: list):
         },
         json={
             'name': title,
-            'description': 'Transferred via SwitchPlay'
+            'description': 'Transferred via SwitchPlay ( Cristian was here :p )'
         }
     )
 
@@ -247,10 +248,62 @@ def transfer_to_spotify(access_token: str, title: str, items: list):
 
     return new_playlist_id, matched_ids, not_found_ids
 
-def transfer_to_apple():
-    #
 
-    pass
+def transfer_to_apple(music_user_token: str, title: str, items: list):
+    """
+    Search for each song on Apple Music, create a playlist, and add matched songs.
+    Returns (playlist_id, matched_db_ids, not_found_ids)
+    """
+    developer_token = generate_apple_developer_token()
+
+    # search for all songs on Apple Music
+    matched_song_ids, matched_db_ids, not_found_ids = search_apple_music(items)
+    print(f"Apple search results: {len(matched_song_ids)} matched, {len(not_found_ids)} not found")
+
+    # create a new playlist on the user's Apple Music library
+    print(f"Music User Token (first 30 chars): {music_user_token[:30]}")
+    create_response = requests.post(
+        "https://api.music.apple.com/v1/me/library/playlists",
+        headers={
+            'Authorization': f'Bearer {developer_token}',
+            'Music-User-Token': music_user_token,
+            'Content-Type': 'application/json'
+        },
+        json={
+            'attributes': {
+                'name': title,
+                'description': 'Transferred via SwitchPlay ( Cristian was here :p )'
+            }
+        }
+    )
+
+    print(f"Apple create playlist status: {create_response.status_code}")
+    print(f"Apple create playlist response: {create_response.text}")
+
+    if create_response.status_code != 201:
+        raise HTTPException(status_code=500, detail="Failed to create playlist on Apple Music")
+
+    new_playlist_id = create_response.json()['data'][0]['id']
+
+    # add matched songs to the playlist
+    if len(matched_song_ids) > 0:
+        tracks_data = [{'id': song_id, 'type': 'songs'} for song_id in matched_song_ids]
+
+        add_response = requests.post(
+            f"https://api.music.apple.com/v1/me/library/playlists/{new_playlist_id}/tracks",
+            headers={
+                'Authorization': f'Bearer {developer_token}',
+                'Music-User-Token': music_user_token,
+                'Content-Type': 'application/json'
+            },
+            json={'data': tracks_data}
+        )
+
+        if add_response.status_code != 204:
+            raise HTTPException(status_code=500, detail="Failed to add songs to Apple Music playlist")
+
+    return new_playlist_id, matched_db_ids, not_found_ids
+
 
 @transfer_router.post('/transfers/{share_code}/complete')
 def complete_transfer(share_code: str, token: str):
@@ -311,7 +364,8 @@ def complete_transfer(share_code: str, token: str):
         access_token = get_spotify_access_token(token)
         new_playlist_id, matched_ids, not_found_ids = transfer_to_spotify(access_token, title, items)
     elif target_platform == 'apple_music':
-        raise HTTPException(status_code=400, detail="Apple Music not supported yet")
+        music_user_token = get_apple_music_access_token(token)
+        new_playlist_id, matched_ids, not_found_ids = transfer_to_apple(music_user_token, title, items)
     else:
         raise HTTPException(status_code=400, detail="Unsupported target platform")
 

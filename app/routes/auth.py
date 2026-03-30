@@ -3,6 +3,7 @@
 import os
 import requests
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from fastapi.responses import RedirectResponse
 from urllib.parse import urlencode
 from dotenv import load_dotenv
@@ -13,6 +14,10 @@ from datetime import datetime, timedelta
 
 auth_router = APIRouter()
 
+
+class AppleCallbackRequest(BaseModel):
+    music_user_token: str
+    
 
 @auth_router.post('/auth/login')
 def login(email: str, password: str):
@@ -139,4 +144,36 @@ def spotify_callback(code: str = None, error: str = None, state: str = None):
         'message': 'Spotify connected succsessfully',
         'user_id': user_id
     }
+
+
+@auth_router.post('/auth/apple/callback')
+def apple_callback(token: str, body: AppleCallbackRequest):
+    """
+    Save Apple Music user token to platform_auth.
+    Called by the frontend after MusicKit JS authorization.
+    """
+    user_id = get_current_user_from_token(token)
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO platform_auth (user_id, platform, access_token)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (user_id, platform)
+            DO UPDATE SET access_token = EXCLUDED.access_token
+            """,
+            (user_id, 'apple_music', body.music_user_token)
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+    return {'message': 'Apple Music connected successfully'}
 
