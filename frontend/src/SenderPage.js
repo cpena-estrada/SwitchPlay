@@ -37,8 +37,15 @@ function SenderPage({ token }) {
       setLoadingPlaylists(false);
       if (response.ok) setPlaylists(data);
       else alert(data.detail);
-    } else {
-      alert('Apple Music playlist fetching not supported yet');
+    } else if (sourcePlatform === 'apple_music') {
+      setLoadingPlaylists(true);
+      const response = await fetch(
+        `http://localhost:8000/apple/playlists?token=${token}`
+      );
+      const data = await response.json();
+      setLoadingPlaylists(false);
+      if (response.ok) setPlaylists(data);
+      else alert(data.detail);
     }
   }
 
@@ -61,7 +68,42 @@ function SenderPage({ token }) {
   }
 
   async function connectPlatform() {
-    window.location.href = `http://localhost:8000/auth/spotify?token=${token}`;
+    if (sourcePlatform === 'spotify') {
+      window.location.href = `http://localhost:8000/auth/spotify?token=${token}`;
+
+    } else if (sourcePlatform === 'apple_music') {
+      // get developer token from backend
+      const response = await fetch(
+        `http://localhost:8000/auth/apple/developer-token?token=${token}`
+      );
+      const data = await response.json();
+
+      // configure MusicKit with developer token
+      const music = await window.MusicKit.configure({
+        developerToken: data.developer_token,
+        app: { name: 'SwitchPlay', build: '1.0' }
+      });
+
+      // open Apple's login popup — user signs in with Apple ID
+      const musicUserToken = await music.authorize();
+
+      // send the Music User Token to our backend to save in platform_auth
+      const saveResponse = await fetch(
+        `http://localhost:8000/auth/apple/callback?token=${token}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ music_user_token: musicUserToken })
+        }
+      );
+      const saveData = await saveResponse.json();
+
+      if (saveResponse.ok) {
+        alert('Apple Music connected!');
+      } else {
+        alert(saveData.detail);
+      }
+    }
   }
 
   const ready = sourcePlatform && targetPlatform;

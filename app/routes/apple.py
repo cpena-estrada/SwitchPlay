@@ -113,7 +113,7 @@ def get_apple_music_playlists(token: str):
         playlists.append({
             'id': p['id'],
             'name': p['attributes']['name'],
-            'total_tracks': 'idk ask chatgpt'  # Apple doesn't provide this in the response
+            'total_tracks': 'i dont know how many'  # Apple doesn't provide this in the response
         })
 
     return playlists
