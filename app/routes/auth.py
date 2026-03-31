@@ -17,10 +17,14 @@ auth_router = APIRouter()
 
 class AppleCallbackRequest(BaseModel):
     music_user_token: str
-    
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
 
 @auth_router.post('/auth/login')
-def login(email: str, password: str):
+def login(body: LoginRequest):
     """
     Create a JWT token for the given user if an only if they exist in DB
     """
@@ -35,7 +39,7 @@ def login(email: str, password: str):
             FROM users
             WHERE email = %s AND password = %s
             """,
-            (email, password)
+            (body.email, body.password)
         )
         user_id = cursor.fetchone()
     except Exception as e:

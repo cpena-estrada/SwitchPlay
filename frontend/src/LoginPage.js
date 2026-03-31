@@ -9,8 +9,12 @@ function LoginPage({ onLogin }) {
   async function handleLogin() {
     setLoading(true);
     const response = await fetch(
-      `http://localhost:8000/auth/login?email=${email}&password=${password}`,
-      { method: 'POST' }
+      `http://localhost:8000/auth/login`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      }
     );
     const data = await response.json();
     setLoading(false);
