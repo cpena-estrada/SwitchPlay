@@ -1,0 +1,419 @@
+/* ── SwitchPlay.css ── */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+/* ── Tokens ── */
+:root {
+  --bg:        #0b0c10;
+  --surface:   #13151c;
+  --surface2:  #1c1f2b;
+  --border:    #2a2d3a;
+  --text:      #eef0f7;
+  --muted:     #6b6f84;
+  --accent:    #7c6dfa;
+  --accent-h:  #9b8dff;
+  --green:     #1DB954;
+  --red:       #fc3c44;
+  --radius:    14px;
+  --radius-sm: 8px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Background ── */
+.sp-bg {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 16px;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 0%, rgba(124,109,250,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 80% 100%, rgba(29,185,84,0.10) 0%, transparent 70%),
+    var(--bg);
+}
+
+/* ── Login card ── */
+.sp-login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Page (sender / receiver) ── */
+.sp-page {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── Logo block ── */
+.sp-logo-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.sp-logo-icon {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.sp-wordmark {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+
+.sp-tagline {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.2px;
+}
+
+/* ── Header (sender/receiver pages) ── */
+.sp-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sp-header .sp-wordmark { font-size: 22px; }
+.sp-header .sp-logo-icon { font-size: 22px; }
+
+.sp-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.sp-badge--receive {
+  background: var(--green);
+}
+
+/* ── Form ── */
+.sp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sp-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sp-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.sp-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.sp-input::placeholder { color: var(--muted); }
+.sp-input:focus { border-color: var(--accent); }
+
+.sp-input-code {
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  letter-spacing: 2px;
+  flex: 1;
+}
+
+/* ── Buttons ── */
+.sp-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 11px 20px;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.sp-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.sp-btn:not(:disabled):hover { opacity: 0.88; }
+.sp-btn:not(:disabled):active { transform: scale(0.98); }
+
+.sp-btn-primary {
+  background: var(--accent);
+  color: #fff;
+  width: 100%;
+}
+
+.sp-btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  width: 100%;
+}
+
+.sp-btn-small {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 16px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* ── Platform picker ── */
+.sp-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+
+.sp-platform-row {
+  display: flex;
+  gap: 12px;
+}
+
+.sp-platform-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.sp-platform-card:hover {
+  border-color: var(--accent);
+}
+
+.sp-platform-card--selected {
+  border-color: var(--accent);
+  background: rgba(124, 109, 250, 0.08);
+}
+
+.sp-platform-emoji { font-size: 28px; line-height: 1; }
+.sp-platform-label { font-size: 13px; font-weight: 600; color: var(--text); }
+
+.sp-platform-check {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ── Arrow divider ── */
+.sp-arrow-divider {
+  text-align: center;
+  font-size: 20px;
+  color: var(--muted);
+}
+
+/* ── Actions row ── */
+.sp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Share code box ── */
+.sp-share-box {
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.sp-share-label {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.sp-share-code {
+  font-family: 'Courier New', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: var(--accent-h);
+}
+
+/* ── Playlist list ── */
+.sp-playlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sp-playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  transition: border-color 0.15s;
+}
+
+.sp-playlist-item:hover { border-color: var(--accent); }
+
+.sp-playlist-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sp-playlist-name { font-size: 14px; font-weight: 600; }
+.sp-playlist-meta { font-size: 12px; color: var(--muted); }
+
+/* ── Transfer card ── */
+.sp-transfer-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.sp-transfer-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.sp-transfer-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.sp-transfer-route {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sp-status {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  width: fit-content;
+}
+
+.sp-status--created  { background: rgba(124,109,250,0.15); color: var(--accent-h); }
+.sp-status--accepted { background: rgba(29,185,84,0.15);  color: var(--green); }
+.sp-status--completed{ background: rgba(29,185,84,0.20);  color: var(--green); }
+
+/* ── Track list ── */
+.sp-track-list {
+  margin-bottom: 20px;
+}
+
+.sp-track-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.sp-track-item:last-child { border-bottom: none; }
+
+.sp-track-num {
+  font-size: 11px;
+  color: var(--muted);
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.sp-track-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sp-track-name   { font-size: 14px; font-weight: 500; }
+.sp-track-artist { font-size: 12px; color: var(--muted); }
+
+/* ── Code row ── */
+.sp-code-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.sp-code-row .sp-btn-primary {
+  width: auto;
+  white-space: nowrap;
+}
+
+/* ── Message banner ── */
+.sp-message {
+  background: rgba(124,109,250,0.12);
+  border: 1px solid rgba(124,109,250,0.3);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-size: 14px;
+  color: var(--accent-h);
+  font-weight: 500;
+}
