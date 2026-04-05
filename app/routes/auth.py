@@ -144,10 +144,8 @@ def spotify_callback(code: str = None, error: str = None, state: str = None):
         cursor.close()
         conn.close()
 
-    return {
-        'message': 'Spotify connected succsessfully',
-        'user_id': user_id
-    }
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+    return RedirectResponse(url=frontend_url)
 
 
 @auth_router.post('/auth/apple/callback')
