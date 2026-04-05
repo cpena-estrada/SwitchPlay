@@ -3,3 +3,7 @@ fly.toml
 __pycache__/
 .envrc
 .venv/
+.env
+.claude
+frontend
+node_modules

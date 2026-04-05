@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./SwitchPlay.css";
+import API_URL from "./api";
 
 function LoginPage({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -9,7 +10,7 @@ function LoginPage({ onLogin }) {
   async function handleLogin() {
     setLoading(true);
     const response = await fetch(
-      `http://localhost:8000/auth/login`,
+      `${API_URL}/auth/login`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

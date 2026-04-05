@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./SwitchPlay.css";
+import API_URL from "./api";
 
 const PLATFORM_META = {
   spotify:     { label: "Spotify",     emoji: "🟢", color: "#1DB954" },
@@ -32,7 +33,7 @@ function SenderPage({ token }) {
   async function fetchPlaylists() {
     if (sourcePlatform === 'spotify') {
       setLoadingPlaylists(true);
-      const response = await fetch(`http://localhost:8000/spotify/playlists?token=${token}`);
+      const response = await fetch(`${API_URL}/spotify/playlists?token=${token}`);
       const data = await response.json();
       setLoadingPlaylists(false);
       if (response.ok) setPlaylists(data);
@@ -40,7 +41,7 @@ function SenderPage({ token }) {
     } else if (sourcePlatform === 'apple_music') {
       setLoadingPlaylists(true);
       const response = await fetch(
-        `http://localhost:8000/apple/playlists?token=${token}`
+        `${API_URL}/apple/playlists?token=${token}`
       );
       const data = await response.json();
       setLoadingPlaylists(false);
@@ -51,7 +52,7 @@ function SenderPage({ token }) {
 
   async function handleTransfer(playlistId, playlistName) {
     setTransferringId(playlistId);
-    const response = await fetch(`http://localhost:8000/transfers?token=${token}`, {
+    const response = await fetch(`${API_URL}/transfers?token=${token}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -69,12 +70,12 @@ function SenderPage({ token }) {
 
   async function connectPlatform() {
     if (sourcePlatform === 'spotify') {
-      window.location.href = `http://localhost:8000/auth/spotify?token=${token}`;
+      window.location.href = `${API_URL}/auth/spotify?token=${token}`;
 
     } else if (sourcePlatform === 'apple_music') {
       // get developer token from backend
       const response = await fetch(
-        `http://localhost:8000/auth/apple/developer-token?token=${token}`
+        `${API_URL}/auth/apple/developer-token?token=${token}`
       );
       const data = await response.json();
 
@@ -89,7 +90,7 @@ function SenderPage({ token }) {
 
       // send the Music User Token to our backend to save in platform_auth
       const saveResponse = await fetch(
-        `http://localhost:8000/auth/apple/callback?token=${token}`,
+        `${API_URL}/auth/apple/callback?token=${token}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

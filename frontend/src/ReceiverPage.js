@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./SwitchPlay.css";
+import API_URL from "./api";
 
 function ReceiverPage({ token }) {
   const [shareCode, setShareCode] = useState('');
@@ -9,7 +10,7 @@ function ReceiverPage({ token }) {
 
   async function viewTransfer() {
     setLoading(true);
-    const response = await fetch(`http://localhost:8000/transfers/${shareCode}`);
+    const response = await fetch(`${API_URL}/transfers/${shareCode}`);
     const data = await response.json();
     setLoading(false);
     if (response.ok) setTransfer(data);
@@ -18,7 +19,7 @@ function ReceiverPage({ token }) {
 
   async function acceptTransfer() {
     const response = await fetch(
-      `http://localhost:8000/transfers/${shareCode}/accept?token=${token}`,
+      `${API_URL}/transfers/${shareCode}/accept?token=${token}`,
       { method: 'POST' }
     );
     const data = await response.json();
@@ -33,7 +34,7 @@ function ReceiverPage({ token }) {
   async function completeTransfer() {
     setMessage('Creating playlist… this may take a moment.');
     const response = await fetch(
-      `http://localhost:8000/transfers/${shareCode}/complete?token=${token}`,
+      `${API_URL}/transfers/${shareCode}/complete?token=${token}`,
       { method: 'POST' }
     );
     const data = await response.json();
