@@ -28,6 +28,28 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── Persistent top-right Log Out button ── */
+.sp-logout-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  padding: 8px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.sp-logout-btn:hover {
+  background: var(--surface2);
+  border-color: var(--accent);
+}
+
 /* ── Background ── */
 .sp-bg {
   min-height: 100vh;
