@@ -179,3 +179,31 @@ def apple_callback(token: str, body: AppleCallbackRequest):
 
     return {'message': 'Apple Music connected successfully'}
 
+
+@auth_router.get('/auth/status')
+def get_connection_status(token: str):
+    """
+    Returns which platforms the user has already connected.
+    """
+    user_id = get_current_user_from_token(token)
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT platform FROM platform_auth WHERE user_id = %s",
+            (user_id,)
+        )
+        platforms = {row[0] for row in cursor.fetchall()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+    return {
+        "spotify_connected": "spotify" in platforms,
+        "apple_connected": "apple_music" in platforms
+    }
+

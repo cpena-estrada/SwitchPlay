@@ -100,10 +100,11 @@ body {
 
 .sp-wordmark {
   font-family: 'Syne', sans-serif;
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  font-size: 38px;
+  font-weight: 750;
+  letter-spacing: -1px;
   color: var(--text);
+  white-space: nowrap;
 }
 
 .sp-tagline {
@@ -119,8 +120,8 @@ body {
   gap: 10px;
 }
 
-.sp-header .sp-wordmark { font-size: 22px; }
-.sp-header .sp-logo-icon { font-size: 22px; }
+.sp-header .sp-wordmark { font-size: 22px; flex-shrink: 0; }
+.sp-header .sp-logo-icon { font-size: 22px; flex-shrink: 0; }
 
 .sp-badge {
   margin-left: auto;
@@ -270,6 +271,32 @@ body {
   font-size: 12px;
   color: var(--accent);
   font-weight: 700;
+}
+
+.sp-platform-connect-cta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+.sp-platform-card--selected .sp-platform-connect-cta {
+  color: var(--accent-h);
+}
+
+/* ── Connected Platforms section (home page) ── */
+.sp-connect-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sp-connect-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 /* ── Arrow divider ── */
