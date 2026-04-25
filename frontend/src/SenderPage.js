@@ -22,7 +22,7 @@ function PlatformCard({ id, selected, onSelect }) {
   );
 }
 
-function SenderPage({ token }) {
+function SenderPage({ token, onConnectPlatform }) {
   const [sourcePlatform, setSourcePlatform] = useState('');
   const [targetPlatform, setTargetPlatform] = useState('');
   const [playlists, setPlaylists] = useState([]);
@@ -68,45 +68,6 @@ function SenderPage({ token }) {
     else alert(data.detail);
   }
 
-  async function connectPlatform() {
-    if (sourcePlatform === 'spotify') {
-      window.location.href = `${API_URL}/auth/spotify?token=${token}`;
-
-    } else if (sourcePlatform === 'apple_music') {
-      // get developer token from backend
-      const response = await fetch(
-        `${API_URL}/auth/apple/developer-token?token=${token}`
-      );
-      const data = await response.json();
-
-      // configure MusicKit with developer token
-      const music = await window.MusicKit.configure({
-        developerToken: data.developer_token,
-        app: { name: 'SwitchPlay', build: '1.0' }
-      });
-
-      // open Apple's login popup — user signs in with Apple ID
-      const musicUserToken = await music.authorize();
-
-      // send the Music User Token to our backend to save in platform_auth
-      const saveResponse = await fetch(
-        `${API_URL}/auth/apple/callback?token=${token}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ music_user_token: musicUserToken })
-        }
-      );
-      const saveData = await saveResponse.json();
-
-      if (saveResponse.ok) {
-        alert('Apple Music connected!');
-      } else {
-        alert(saveData.detail);
-      }
-    }
-  }
-
   const ready = sourcePlatform && targetPlatform;
 
   return (
@@ -140,7 +101,7 @@ function SenderPage({ token }) {
 
         {ready && (
           <div className="sp-actions">
-            <button className="sp-btn sp-btn-secondary" onClick={connectPlatform}>
+            <button className="sp-btn sp-btn-secondary" onClick={() => onConnectPlatform(sourcePlatform)}>
               Connect {PLATFORM_META[sourcePlatform].label}
             </button>
             <button className="sp-btn sp-btn-primary" onClick={fetchPlaylists} disabled={loadingPlaylists}>

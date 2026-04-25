@@ -140,7 +140,7 @@ function App() {
     return (
       <>
         {LogoutButton}
-        <SenderPage token={token} onLogout={logout} onBack={() => updatePage('choose')} />
+        <SenderPage token={token} onLogout={logout} onBack={() => updatePage('choose')} onConnectPlatform={connectPlatform} />
       </>
     );
   }
