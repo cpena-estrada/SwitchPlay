@@ -2,7 +2,16 @@ import os
 from uuid import UUID
 from fastapi import HTTPException
 from jose import jwt
+from passlib.context import CryptContext
 from datetime import datetime, timedelta
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hash_password(plain: str):
+    return pwd_context.hash(plain)
+
+def verify_password(plain: str, hashed: str):
+    return pwd_context.verify(plain, hashed)
 
 
 def validate_uuid(id_string: str):

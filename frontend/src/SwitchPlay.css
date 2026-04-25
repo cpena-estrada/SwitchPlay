@@ -221,6 +221,59 @@ body {
   flex-shrink: 0;
 }
 
+/* ── Sign up name row ── */
+.sp-name-row {
+  display: flex;
+  gap: 10px;
+}
+.sp-name-row .sp-input-group {
+  flex: 1;
+}
+
+/* ── Login/signup toggle ── */
+.sp-toggle {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+.sp-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.sp-toggle-btn:hover { text-decoration: underline; }
+
+.sp-btn-google {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sp-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.sp-divider::before,
+.sp-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
 /* ── Platform picker ── */
 .sp-section-title {
   font-size: 11px;

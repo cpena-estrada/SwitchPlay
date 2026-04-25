@@ -2,9 +2,43 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from ..database import get_connection
-from ..utils import validate_uuid
+from ..utils import validate_uuid, hash_password
 
 users_router = APIRouter()
+
+
+def find_or_create_user(email: str, first_name: str, last_name: str) -> str:
+    """
+    Look up a user by email. If they don't exist, create them (no password — OAuth users (Google users)).
+    Returns the user_id as a string.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        existing = cursor.fetchone()
+
+        if existing:
+            return str(existing[0])
+
+        cursor.execute(
+            """
+            INSERT INTO users (first_name, last_name, email, password)
+            VALUES (%s, %s, %s, NULL)
+            RETURNING id
+            """,
+            (first_name, last_name, email)
+        )
+        user_id = cursor.fetchone()[0]
+        conn.commit()
+        return str(user_id)
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
 
 class UserCreate(BaseModel):
     first_name: str
@@ -28,7 +62,7 @@ def insert_user(user: UserCreate):
             VALUES (%s, %s, %s, %s)
             RETURNING id, first_name, last_name, email, created_at
             """,
-            (user.first_name, user.last_name, user.email, user.password)
+            (user.first_name, user.last_name, user.email, hash_password(user.password))
         )
         new_user = cursor.fetchone()
         conn.commit()

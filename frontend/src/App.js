@@ -34,6 +34,17 @@ function App() {
     updatePage('login');
   }
 
+  // Handle Google OAuth redirect: /auth/google/callback sends us to /?token=...
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const googleToken = params.get('token');
+    if (googleToken) {
+      updateToken(googleToken);
+      updatePage('choose');
+      window.history.replaceState({}, '', '/'); // clean ?token= from the URL
+    }
+  }, []);
+
   useEffect(() => {
     if (token && page === 'choose') {
       fetch(`${API_URL}/auth/status?token=${token}`)

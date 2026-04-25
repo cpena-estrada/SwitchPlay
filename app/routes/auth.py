@@ -8,7 +8,8 @@ from fastapi.responses import RedirectResponse
 from urllib.parse import urlencode
 from dotenv import load_dotenv
 from ..database import get_connection
-from ..utils import create_token, get_current_user_from_token
+from ..utils import create_token, get_current_user_from_token, verify_password
+from .users import find_or_create_user
 from datetime import datetime, timedelta
 
 
@@ -33,26 +34,21 @@ def login(body: LoginRequest):
 
     try:
         cursor.execute(
-            """
-            SELECT
-                id
-            FROM users
-            WHERE email = %s AND password = %s
-            """,
-            (body.email, body.password)
+            "SELECT id, password FROM users WHERE email = %s",
+            (body.email,)
         )
-        user_id = cursor.fetchone()
+        row = cursor.fetchone()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
         conn.close()
 
-    # found no match
-    if user_id is None:
+    # no user found, or user signed up via Google (no password)
+    if row is None or row[1] is None or not verify_password(body.password, row[1]):
         raise HTTPException(status_code=401, detail='Invalid email or password')
-        
-    token = create_token(str(user_id[0])) # [0] because its a tuple
+
+    token = create_token(str(row[0]))
     return {'access_token': token}
 
 
@@ -207,3 +203,72 @@ def get_connection_status(token: str):
         "apple_connected": "apple_music" in platforms
     }
 
+
+@auth_router.get('/auth/google')
+def google_login():
+    """
+    Redirect user to Google's OAuth consent screen.
+    """
+    GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+    GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
+
+    params = urlencode({
+        'client_id': GOOGLE_CLIENT_ID,
+        'redirect_uri': GOOGLE_REDIRECT_URI,
+        'response_type': 'code',
+        'scope': 'openid email profile',
+        'access_type': 'offline',
+    })
+
+    return RedirectResponse(url=f"https://accounts.google.com/o/oauth2/v2/auth?{params}")
+
+
+@auth_router.get('/auth/google/callback')
+def google_callback(code: str = None, error: str = None):
+    """
+    Google redirects here after the user logs in.
+    Exchange code for user info, find or create the user, issue a JWT.
+    """
+    if error or not code:
+        raise HTTPException(status_code=400, detail=f'Google auth error: {error}')
+
+    GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+    GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+    GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
+    frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:3000')
+
+    # 1. Exchange code for tokens
+    token_response = requests.post(
+        'https://oauth2.googleapis.com/token',
+        data={
+            'code': code,
+            'client_id': GOOGLE_CLIENT_ID,
+            'client_secret': GOOGLE_CLIENT_SECRET,
+            'redirect_uri': GOOGLE_REDIRECT_URI,
+            'grant_type': 'authorization_code',
+        }
+    )
+    if token_response.status_code != 200:
+        raise HTTPException(status_code=500, detail='Failed to get Google token')
+
+    google_access_token = token_response.json()['access_token']
+
+    # 2. Get user info from Google
+    userinfo_response = requests.get(
+        'https://www.googleapis.com/oauth2/v2/userinfo',
+        headers={'Authorization': f'Bearer {google_access_token}'}
+    )
+    if userinfo_response.status_code != 200:
+        raise HTTPException(status_code=500, detail='Failed to get Google user info')
+
+    google_user = userinfo_response.json()
+    email = google_user['email']
+    first_name = google_user.get('given_name', '')
+    last_name = google_user.get('family_name', '')
+
+    # 3. Find or create user in our DB
+    user_id = find_or_create_user(email, first_name, last_name)
+
+    # 4. Issue our JWT and send user back to the frontend
+    jwt_token = create_token(str(user_id))
+    return RedirectResponse(url=f"{frontend_url}?token={jwt_token}")
