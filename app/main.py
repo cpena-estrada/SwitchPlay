@@ -6,6 +6,7 @@ from app.routes.auth import auth_router
 from app.routes.spotify import spotify_router
 from app.routes.transfer import transfer_router
 from app.routes.apple import apple_router
+from app.routes.stats import stats_router  # remove after class
 from app.database import get_connection
 
 app = FastAPI(
@@ -30,6 +31,7 @@ app.include_router(auth_router)
 app.include_router(spotify_router)
 app.include_router(transfer_router)
 app.include_router(apple_router)
+app.include_router(stats_router)  # remove after class
 
 
 @app.get("/")

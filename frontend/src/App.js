@@ -3,6 +3,7 @@ import "./SwitchPlay.css";
 import LoginPage from "./LoginPage";
 import SenderPage from "./SenderPage";
 import ReceiverPage from "./ReceiverPage";
+import StatsPage from "./StatsPage"; // remove after class
 import API_URL from "./api";
 
 const PLATFORM_META = {
@@ -120,6 +121,10 @@ function App() {
             <button className="sp-btn sp-btn-secondary" onClick={() => updatePage('receiver')}>
               Receive a Playlist
             </button>
+            {/* remove after class */}
+            <button className="sp-btn sp-btn-secondary" onClick={() => updatePage('stats')}>
+              View Stats
+            </button>
           </div>
           <div className="sp-connect-section">
             <p className="sp-connect-label">Connected Platforms</p>
@@ -161,6 +166,16 @@ function App() {
       <>
         {LogoutButton}
         <ReceiverPage token={token} onLogout={logout} onBack={() => updatePage('choose')} />
+      </>
+    );
+  }
+
+  // remove after class
+  if (page === 'stats') {
+    return (
+      <>
+        {LogoutButton}
+        <StatsPage token={token} onBack={() => updatePage('choose')} />
       </>
     );
   }
