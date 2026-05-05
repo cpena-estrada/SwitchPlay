@@ -35,6 +35,25 @@ function App() {
     updatePage('login');
   }
 
+  // remove after class
+  async function deleteAccount() {
+    const confirmed = window.confirm(
+      "Permanently delete your account? This cannot be undone."
+    );
+    if (!confirmed) return;
+
+    const response = await fetch(`${API_URL}/users/me?token=${token}`, {
+      method: 'DELETE'
+    });
+    const data = await response.json();
+    if (response.ok) {
+      alert("Account deleted.");
+      logout();
+    } else {
+      alert(data.detail);
+    }
+  }
+
   // Handle Google OAuth redirect: /auth/google/callback sends us to /?token=...
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -126,6 +145,10 @@ function App() {
               View Stats
             </button>
           </div>
+          {/* remove after class */}
+          <button className="sp-delete-account" onClick={deleteAccount}>
+            Delete Account
+          </button>
           <div className="sp-connect-section">
             <p className="sp-connect-label">Connected Platforms</p>
             <div className="sp-platform-row">

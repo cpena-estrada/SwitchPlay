@@ -268,6 +268,20 @@ body {
   letter-spacing: 0.5px;
 }
 
+/* Delete Account (remove after class) */
+.sp-delete-account {
+  background: none;
+  border: none;
+  color: #ff5959;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  align-self: center;
+  text-decoration: underline;
+}
+.sp-delete-account:hover { color: #ff7777; }
+
 .sp-btn-google {
   background: var(--surface2);
   color: var(--text);

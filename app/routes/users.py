@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from ..database import get_connection
-from ..utils import validate_uuid, hash_password
+from ..utils import validate_uuid, hash_password, get_current_user_from_token
 
 users_router = APIRouter()
 
@@ -75,6 +75,30 @@ def insert_user(user: UserCreate):
         }
     except Exception as e:
         conn.rollback() # undo failed insert
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@users_router.delete('/users/me')
+def delete_my_account(token: str):
+    """
+    Delete the currently authenticated user's account.
+    Calls the delete_user() stored procedure. (subject to change)
+    The trg_prevent_user_delete trigger will block this if the user has any
+    transfers not in the 'completed' state.
+    """
+    user_id = get_current_user_from_token(token)
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT delete_user(%s)", (user_id,))
+        conn.commit()
+        return {"message": "Account deleted successfully"}
+    except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=400, detail=str(e))
     finally:
         cursor.close()
